@@ -155,7 +155,7 @@ public class WeightedItem extends WeightedObject<ItemType> implements DataSerial
         if (this == obj) {
             return true;
         }
-        if (obj == null || getClass() != obj.getClass()) {
+        if (!(obj instanceof WeightedItem)) {
             return false;
         }
         WeightedItem object = (WeightedItem) obj;
@@ -169,6 +169,16 @@ public class WeightedItem extends WeightedObject<ItemType> implements DataSerial
             return false;
         }
         return this.weight == object.weight;
+    }
+    
+    @Override
+    public int hashCode() {
+        int result = 1;
+        result = 37 * result + this.additionalProperties.hashCode();
+        result = 37 * result + this.object.hashCode();
+        result = 37 * result + this.weight;
+        result = 37 * result + this.quantity.hashCode();
+        return result;
     }
 
     @Override
