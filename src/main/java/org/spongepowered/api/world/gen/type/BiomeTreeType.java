@@ -24,6 +24,10 @@
  */
 package org.spongepowered.api.world.gen.type;
 
+import javax.annotation.Nullable;
+
+import com.google.common.base.Optional;
+import org.spongepowered.api.world.gen.PopulatorObject;
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.util.annotation.CatalogedBy;
 
@@ -32,5 +36,15 @@ import org.spongepowered.api.util.annotation.CatalogedBy;
  */
 @CatalogedBy(BiomeTreeTypes.class)
 public interface BiomeTreeType extends CatalogType {
+
+    PopulatorObject getPopulatorObject();
+    
+    void setPopulatorObject(PopulatorObject object);
+    
+    boolean hasLargeEquivalent();
+    
+    Optional<PopulatorObject> getLargePopulatorObject();
+    
+    void setLargePopulatorObject(@Nullable PopulatorObject object);
 
 }

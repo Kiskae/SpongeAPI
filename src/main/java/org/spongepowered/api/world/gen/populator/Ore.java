@@ -24,6 +24,8 @@
  */
 package org.spongepowered.api.world.gen.populator;
 
+import com.google.common.base.Predicate;
+
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.util.VariableAmount;
 import org.spongepowered.api.world.gen.Populator;
@@ -81,32 +83,22 @@ public interface Ore extends Populator {
     void setDepositsPerChunk(VariableAmount count);
 
     /**
-     * Gets the minimum height that the ore can generate at.
+     * Gets the height that the ore can generate at.
      * 
-     * @return The minimum height
+     * @return The height
      */
-    VariableAmount getMinHeight();
+    VariableAmount getHeight();
 
     /**
-     * Sets the minimum height that the ore can generate at.
+     * Sets the height that the ore can generate at.
      * 
-     * @param min The new minimum height
+     * @param height The new height
      */
-    void setMinHeight(VariableAmount min);
-
-    /**
-     * Gets the maximum height that the ore can generate at.
-     * 
-     * @return The maximum height
-     */
-    VariableAmount getMaxHeight();
-
-    /**
-     * Sets the maximum height that the ore can generate at.
-     * 
-     * @param max The new maximum height
-     */
-    void setMaxHeight(VariableAmount max);
+    void setHeight(VariableAmount height);
+    
+    Predicate<BlockState> getPlacementCondition();
+    
+    void setPlacementCondition(Predicate<BlockState> condition);
 
     /**
      * A builder for constructing {@link Ore} populators.
@@ -140,20 +132,14 @@ public interface Ore extends Populator {
         Builder perChunk(VariableAmount count);
 
         /**
-         * Sets the minimum height that the ore can generate at.
+         * Sets the height that the ore can generate at.
          * 
-         * @param min The new minimum height
+         * @param height The new height
          * @return This builder, for chaining
          */
-        Builder minHeight(VariableAmount min);
-
-        /**
-         * Sets the maximum height that the ore can generate at.
-         * 
-         * @param max The new maximum height
-         * @return This builder, for chaining
-         */
-        Builder maxHeight(VariableAmount max);
+        Builder height(VariableAmount height);
+        
+        Builder placementCondition(Predicate<BlockState> condition);
 
         /**
          * Resets this builder to the default values.

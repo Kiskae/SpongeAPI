@@ -25,63 +25,90 @@
 package org.spongepowered.api.world.gen.populator;
 
 import com.google.common.base.Predicate;
+import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.util.VariableAmount;
+import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.gen.Populator;
 
 /**
- * Represents a populator which creates fires on the surfaces of targeted
- * blocks. In vanilla this is used to create random fires in the Nether.
+ * Represents a populator which creates random distributions of singular blocks,
+ * such as fire in the nether and water in the walls of caves.
  */
-public interface RandomFire extends Populator {
+public interface RandomBlock extends Populator {
 
     /**
-     * Gets the number of fires to attempt to spawn per chunk, must be greater
+     * Gets the {@link BlockState} that this populator will randomly distribute.
+     * 
+     * @return The block state
+     */
+    BlockState getBlock();
+
+    /**
+     * Sets the {@link BlockState} that this populator will randomly distribute.
+     * 
+     * @param block The new block state
+     */
+    void setBlock(BlockState block);
+
+    /**
+     * Gets the number of blocks to attempt to spawn per chunk, must be greater
      * than zero.
      * 
      * @return The number to spawn
      */
-    VariableAmount getFirePerChunk();
+    VariableAmount getAttemptsPerChunk();
 
     /**
-     * Sets the number of fires to attempt to spawn per chunk, must be greater
+     * Sets the number of blocks to attempt to spawn per chunk, must be greater
      * than zero.
      * 
      * @param count The new number to spawn
      */
-    void setFirePerChunk(VariableAmount count);
+    void setAttemptsPerChunk(VariableAmount count);
+
+    VariableAmount getHeightRange();
+
+    void setHeightRange(VariableAmount height);
 
     /**
      * Gets the {@link Predicate} that this populator used to determine of a
-     * given {@link BlockType} is valid to attempt to place a block of fire on
-     * top of.
+     * given {@link Location} is valid to attempt to place a block at.
      * 
      * @return The targeted block predicate
      */
-    Predicate<BlockType> getPlacementTarget();
+    Predicate<Location> getPlacementTarget();
 
     /**
      * Sets the {@link Predicate} that this populator used to determine of a
-     * given {@link BlockType} is valid to attempt to place a block of fire on
-     * top of.
+     * given {@link Location} is valid to attempt to place a blockat.
      * 
      * @param target The new targeted block predicate
      */
-    void getPlacementTarget(Predicate<BlockType> target);
+    void getPlacementTarget(Predicate<Location> target);
 
     /**
-     * A builder for constructing {@link RandomFire} populators.
+     * A builder for constructing {@link RandomBlock} populators.
      */
     interface Builder {
 
         /**
-         * Sets the number of fires to attempt to spawn per chunk, must be
+         * Sets the {@link BlockState} that this populator will randomly
+         * distribute.
+         * 
+         * @param block The new block state
+         * @return This builder, for chaining
+         */
+        Builder block(BlockState block);
+
+        /**
+         * Sets the number of blocks to attempt to spawn per chunk, must be
          * greater than zero.
          * 
          * @param count The new number to spawn
          * @return This builder, for chaining
          */
-        Builder perChunk(int count);
+        Builder perChunk(VariableAmount count);
 
         /**
          * Sets the {@link Predicate} that this populator used to determine of a
@@ -91,7 +118,7 @@ public interface RandomFire extends Populator {
          * @param target The new targeted block predicate
          * @return This builder, for chaining
          */
-        Builder placementTarget(Predicate<BlockType> target);
+        Builder placementTarget(Predicate<Location> target);
 
         /**
          * Resets this builder to the default values.
@@ -101,14 +128,14 @@ public interface RandomFire extends Populator {
         Builder reset();
 
         /**
-         * Builds a new instance of a {@link RandomFire} populator with the
+         * Builds a new instance of a {@link RandomBlock} populator with the
          * settings set within the builder.
          * 
          * @return A new instance of the populator
          * @throws IllegalStateException If there are any settings left unset
          *         which do not have default values
          */
-        RandomFire build() throws IllegalStateException;
+        RandomBlock build() throws IllegalStateException;
 
     }
 

@@ -26,6 +26,7 @@ package org.spongepowered.api.world.gen.type;
 
 import org.spongepowered.api.CatalogType;
 import org.spongepowered.api.util.annotation.CatalogedBy;
+import org.spongepowered.api.world.gen.PopulatorObject;
 
 /**
  * Represents the various types of mushrooms which may be spawned into the world.
@@ -33,4 +34,8 @@ import org.spongepowered.api.util.annotation.CatalogedBy;
 @CatalogedBy(MushroomTypes.class)
 public interface MushroomType extends CatalogType {
 
+    PopulatorObject getPopulatorObject();
+    
+    void setPopulatorObject(PopulatorObject object);
+    
 }

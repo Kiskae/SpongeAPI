@@ -64,6 +64,10 @@ public interface Glowstone extends Populator {
      * @param attempts The new amount to spawn
      */
     void setAttemptsPerCluster(VariableAmount attempts);
+    
+    VariableAmount getHeightRange();
+    
+    void setHeightRange(VariableAmount height);
 
     /**
      * A builder for constructing {@link Glowstone} populators.
@@ -87,6 +91,8 @@ public interface Glowstone extends Populator {
          * @return This builder, for chaining
          */
         Builder blocksPerCluster(VariableAmount attempts);
+        
+        Builder heightRange(VariableAmount height);
 
         /**
          * Resets this builder to the default values.

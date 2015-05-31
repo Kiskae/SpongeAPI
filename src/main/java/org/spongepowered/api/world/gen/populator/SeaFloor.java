@@ -24,10 +24,7 @@
  */
 package org.spongepowered.api.world.gen.populator;
 
-import org.spongepowered.api.block.BlockType;
-
-import java.util.Set;
-
+import com.google.common.base.Predicate;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.util.VariableAmount;
 import org.spongepowered.api.world.gen.Populator;
@@ -81,13 +78,14 @@ public interface SeaFloor extends Populator {
      * @param radius The new disc radius
      */
     void setRadius(VariableAmount radius);
+    
+    VariableAmount getDepth();
+    
+    void setDepth(VariableAmount depth);
 
-    /**
-     * Gets a mutable set of valid blocks which this populator may replace.
-     * 
-     * @return The set of valid replacement blocks
-     */
-    Set<BlockType> getValidBlocksToReplace();
+    Predicate<BlockState> getValidBlocksToReplace();
+
+    void setValidBlocksToReplace(Predicate<BlockState> check);
 
     /**
      * A builder for constructing {@link SeaFloor} populators.
@@ -118,14 +116,10 @@ public interface SeaFloor extends Populator {
          * @return This builder, for chaining
          */
         Builder radius(VariableAmount radius);
+        
+        Builder depth(VariableAmount depth);
 
-        /**
-         * Sets which block types may be replaced by this populator.
-         * 
-         * @param types The valid blocks to replace
-         * @return This builder, for chaining
-         */
-        Builder replace(BlockType... types);
+        Builder replace(Predicate<BlockState> check);
 
         /**
          * Resets this builder to the default values.

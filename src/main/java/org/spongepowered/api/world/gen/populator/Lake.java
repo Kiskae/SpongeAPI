@@ -52,7 +52,7 @@ public interface Lake extends Populator {
      * 
      * @return The lake spawn probability
      */
-    int getLakeProbability();
+    double getLakeProbability();
 
     /**
      * Sets the probability of a lake spawning in a chunk. The default value is
@@ -61,7 +61,7 @@ public interface Lake extends Populator {
      * 
      * @param p The new lake spawn probability
      */
-    void setLakeProbability(int p);
+    void setLakeProbability(double p);
 
     /**
      * A builder for constructing {@link Lake} populators.
@@ -84,7 +84,7 @@ public interface Lake extends Populator {
          * @param p The new lake spawn probability
          * @return This builder, for chaining
          */
-        Builder chance(int p);
+        Builder chance(double p);
 
         /**
          * Resets this builder to the default values.

@@ -37,13 +37,12 @@ import org.spongepowered.api.world.gen.populator.Glowstone;
 import org.spongepowered.api.world.gen.populator.HugeTree;
 import org.spongepowered.api.world.gen.populator.IcePath;
 import org.spongepowered.api.world.gen.populator.IceSpike;
-import org.spongepowered.api.world.gen.populator.JungleBush;
 import org.spongepowered.api.world.gen.populator.Lake;
 import org.spongepowered.api.world.gen.populator.Melons;
 import org.spongepowered.api.world.gen.populator.Ore;
 import org.spongepowered.api.world.gen.populator.Pumpkin;
-import org.spongepowered.api.world.gen.populator.RandomFire;
-import org.spongepowered.api.world.gen.populator.RandomLiquids;
+import org.spongepowered.api.world.gen.populator.RandomBlock;
+import org.spongepowered.api.world.gen.populator.RandomObject;
 import org.spongepowered.api.world.gen.populator.Reeds;
 import org.spongepowered.api.world.gen.populator.SeaFloor;
 import org.spongepowered.api.world.gen.populator.Shrub;
@@ -147,13 +146,6 @@ public interface PopulatorFactory {
     IceSpike.Builder createIceSpikePopulator();
 
     /**
-     * Creates a new {@link JungleBush} populator builder.
-     * 
-     * @return A new builder instance
-     */
-    JungleBush.Builder createJungleBushPopulator();
-
-    /**
      * Creates a new {@link Lake} populator builder.
      * 
      * @return A new builder instance
@@ -182,18 +174,18 @@ public interface PopulatorFactory {
     Pumpkin.Builder createPumpkinPopulator();
 
     /**
-     * Creates a new {@link RandomFire} populator builder.
+     * Creates a new {@link RandomBlock} populator builder.
      * 
      * @return A new builder instance
      */
-    RandomFire.Builder createRandomFirePopulator();
+    RandomBlock.Builder createRandomBlockPopulator();
 
     /**
-     * Creates a new {@link RandomLiquids} populator builder.
+     * Creates a new {@link RandomObject} populator builder.
      * 
      * @return A new builder instance
      */
-    RandomLiquids.Builder createRandomLiquidsPopulator();
+    RandomObject.Builder createRandomObjectPopulator();
 
     /**
      * Creates a new {@link Reeds} populator builder.

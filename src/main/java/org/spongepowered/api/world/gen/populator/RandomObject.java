@@ -25,67 +25,58 @@
 package org.spongepowered.api.world.gen.populator;
 
 import org.spongepowered.api.util.VariableAmount;
-
-import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.world.gen.Populator;
+import org.spongepowered.api.world.gen.PopulatorObject;
 
-/**
- * Represents a populator which places random liquid sources in walls of caves
- * or the terrain of the chunk.
- */
-public interface RandomLiquids extends Populator {
+public interface RandomObject extends Populator {
 
     /**
-     * Gets the {@link BlockState} of the liquid to fill the lake with.
+     * Gets the number of fires to attempt to spawn per chunk, must be greater
+     * than zero.
      * 
-     * @return The lake block state
-     */
-    BlockState getLiquidType();
-
-    /**
-     * Sets the {@link BlockState} of the liquid to fill the lake with.
-     * 
-     * @param liquid The new lake block state
-     */
-    void setLiquidType(BlockState liquid);
-
-    /**
-     * Gets the number of liquid sources to attempt to spawn per chunk, must be
-     * greater than zero.
-     * 
-     * @return The number of attempts to make
+     * @return The number to spawn
      */
     VariableAmount getAttemptsPerChunk();
 
     /**
-     * Sets the number of liquid sources to attempt to spawn per chunk, must be
-     * greater than zero. The default is 20 for lava and 50 for water.
+     * Sets the number of fires to attempt to spawn per chunk, must be greater
+     * than zero.
      * 
-     * @param attempts The new number of attempts to make
+     * @param count The new number to spawn
      */
-    void setAttemptsPerChunk(VariableAmount attempts);
+    void setAttemptsPerChunk(VariableAmount count);
+
+    VariableAmount getHeightRange();
+
+    void setHeightRange(VariableAmount height);
+
+    PopulatorObject getObject();
+
+    void setObject(PopulatorObject obj);
+
+    double getSpawnChance();
+
+    void setSpawnChance(double chance);
 
     /**
-     * A builder for constructing {@link RandomLiquids} populators.
+     * A builder for constructing {@link RandomBlock} populators.
      */
     interface Builder {
 
         /**
-         * Sets the {@link BlockState} of the liquid to fill the lake with.
+         * Sets the number of fires to attempt to spawn per chunk, must be
+         * greater than zero.
          * 
-         * @param liquid The new lake block state
+         * @param count The new number to spawn
          * @return This builder, for chaining
          */
-        Builder liquidType(BlockState liquid);
+        Builder perChunk(int count);
 
-        /**
-         * Sets the number of liquid sources to attempt to spawn per chunk, must
-         * be greater than zero. The default is 20 for lava and 50 for water.
-         * 
-         * @param attempts The new number of attempts to make
-         * @return This builder, for chaining
-         */
-        Builder perChunk(VariableAmount attempts);
+        Builder height(VariableAmount height);
+
+        Builder object(PopulatorObject obj);
+
+        Builder spawnChance(double chance);
 
         /**
          * Resets this builder to the default values.
@@ -95,14 +86,14 @@ public interface RandomLiquids extends Populator {
         Builder reset();
 
         /**
-         * Builds a new instance of a {@link RandomLiquids} populator with the
+         * Builds a new instance of a {@link RandomBlock} populator with the
          * settings set within the builder.
          * 
          * @return A new instance of the populator
          * @throws IllegalStateException If there are any settings left unset
          *         which do not have default values
          */
-        RandomLiquids build() throws IllegalStateException;
+        RandomObject build() throws IllegalStateException;
 
     }
 

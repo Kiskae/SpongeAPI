@@ -41,6 +41,17 @@ import com.google.common.collect.Lists;
  * @param <T> The weighted object type
  */
 public class WeightedCollection<T extends WeightedObject<?>> implements Collection<T> {
+    
+    public static <T extends WeightedObject<?>> WeightedCollection<T> of(T... objects) {
+        WeightedCollection<T> collection = new WeightedCollection<T>();
+        for(int i = 0; i < objects.length; i++) {
+            if(objects[i] == null) {
+                continue;
+            }
+            collection.add(objects[i]);
+        }
+        return collection;
+    }
 
     private final List<T> objects;
     private int totalWeight = 0;
@@ -63,7 +74,7 @@ public class WeightedCollection<T extends WeightedObject<?>> implements Collecti
     public T get(Random rand) {
         int target = rand.nextInt(this.totalWeight);
         int current = 0;
-        for (Iterator<T> it = iterator(); it.hasNext();) {
+        for (Iterator<T> it = iterator(); it.hasNext(); ) {
             T obj = it.next();
             current += obj.getWeight();
             if (current > target) {

@@ -48,6 +48,10 @@ public interface Reeds extends Populator {
      * @param count The new amount to spawn
      */
     void setReedsPerChunk(VariableAmount count);
+    
+    VariableAmount getReedHeight();
+    
+    void setReedHeight(VariableAmount height);
 
     /**
      * A builder for constructing {@link Reeds} populators.
@@ -62,6 +66,8 @@ public interface Reeds extends Populator {
          * @return This builder, for chaining
          */
         Builder perChunk(VariableAmount count);
+        
+        Builder reedHeight(VariableAmount height);
 
         /**
          * Resets this builder to the default values.

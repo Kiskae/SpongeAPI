@@ -34,6 +34,7 @@ public final class BiomeTreeTypes {
     public static final BiomeTreeType TALL_TAIGA = null;
     public static final BiomeTreeType POINTY_TAIGA = null;
     public static final BiomeTreeType JUNGLE = null;
+    public static final BiomeTreeType JUNGLE_BUSH = null;
     public static final BiomeTreeType SAVANNA = null;
     public static final BiomeTreeType CANOPY = null;
     public static final BiomeTreeType SWAMP = null;
