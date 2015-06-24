@@ -70,7 +70,7 @@ public interface RandomObject extends Populator {
          * @param count The new number to spawn
          * @return This builder, for chaining
          */
-        Builder perChunk(int count);
+		Builder perChunk(VariableAmount count);
 
         Builder height(VariableAmount height);
 
