@@ -60,6 +60,20 @@ public abstract class VariableAmount implements DataSerializable {
      * @return A variable amount representation
      */
     public static VariableAmount baseWithVariance(double base, double variance) {
+        return new BaseAndVariance(base, VariableAmount.fixed(variance));
+    }
+
+    /**
+     * Creates a new variable about which has a base and variance. The final
+     * amount will be the base amount plus or minus a random amount between zero
+     * (inclusive) and the variance (exclusive).
+     * 
+     * @param base The base value
+     * @param variance The variance
+     * @return A variable amount representation
+     */
+    public static VariableAmount baseWithVariance(double base,
+            VariableAmount variance) {
         return new BaseAndVariance(base, variance);
     }
 
@@ -72,8 +86,21 @@ public abstract class VariableAmount implements DataSerializable {
      * @param addition The additional amount
      * @return A variable amount representation
      */
+    public static VariableAmount baseWithRandomAddition(double base, VariableAmount addition) {
+        return new BaseAndAddition(base, addition);
+    }
+
+    /**
+     * Creates a new variable amount which has a base and an additional amount.
+     * The final amount will be the base amount plus a random amount between
+     * zero (inclusive) and the additional amount (exclusive).
+     * 
+     * @param base The base value
+     * @param addition The additional amount
+     * @return A variable amount representation
+     */
     public static VariableAmount baseWithRandomAddition(double base, double addition) {
-        return new BaseAndVariance(base + addition / 2, addition / 2);
+        return new BaseAndAddition(base, VariableAmount.fixed(addition));
     }
 
     /**
@@ -187,16 +214,17 @@ public abstract class VariableAmount implements DataSerializable {
     public static class BaseAndVariance extends VariableAmount {
 
         private double base;
-        private double variance;
+        private VariableAmount variance;
 
-        private BaseAndVariance(double base, double variance) {
+        private BaseAndVariance(double base, VariableAmount variance) {
             this.base = base;
             this.variance = variance;
         }
 
         @Override
         public double getAmount(Random rand) {
-            return this.base + rand.nextDouble() * this.variance * 2 - this.variance;
+            double var = this.variance.getAmount(rand);
+            return this.base + rand.nextDouble() * var * 2 - var;
         }
 
         @Override
@@ -220,7 +248,54 @@ public abstract class VariableAmount implements DataSerializable {
         public int hashCode() {
             int result = 1;
             result = 37 * result + (int) (Double.doubleToLongBits(this.base) ^ (Double.doubleToLongBits(this.base) >> 32));
-            result = 37 * result + (int) (Double.doubleToLongBits(this.variance) ^ (Double.doubleToLongBits(this.variance) >> 32));
+            result = 37 * result + this.variance.hashCode();
+            return result;
+        }
+
+    }
+
+    /**
+     * Represents a base amount with a random addition, the final amount will be
+     * the base amount plus a random amount between zero (inclusive) and the
+     * addition (exclusive).
+     */
+    public static class BaseAndAddition extends VariableAmount {
+
+        private double base;
+        private VariableAmount addition;
+
+        private BaseAndAddition(double base, VariableAmount addition) {
+            this.base = base;
+            this.addition = addition;
+        }
+
+        @Override
+        public double getAmount(Random rand) {
+            return this.base + this.addition.getAmount(rand);
+        }
+
+        @Override
+        public String toString() {
+            return Objects.toStringHelper(this).add("base", this.base).add("addition", this.addition).toString();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (!(obj instanceof BaseAndAddition)) {
+                return false;
+            }
+            BaseAndAddition amount = (BaseAndAddition) obj;
+            return amount.base == this.base && amount.addition == this.addition;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = 1;
+            result = 37 * result + (int) (Double.doubleToLongBits(this.base) ^ (Double.doubleToLongBits(this.base) >> 32));
+            result = 37 * result + this.addition.hashCode();
             return result;
         }
 
