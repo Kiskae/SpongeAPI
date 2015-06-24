@@ -26,13 +26,14 @@ package org.spongepowered.api.util.weighted;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
-
-import com.google.common.collect.Lists;
 
 /**
  * Represents a mutable collection of weighted objects. This collection is not
@@ -41,14 +42,42 @@ import com.google.common.collect.Lists;
  * @param <T> The weighted object type
  */
 public class WeightedCollection<T extends WeightedObject<?>> implements Collection<T> {
-    
+
+    /**
+     * Returns a new {@link WeightedCollection} filled with the given weighted
+     * objects.
+     * 
+     * @param objects The weighted objects to add to the new collection.
+     * @param <T> The weighted object type
+     * @return A new weighted collection containing the given objects
+     */
     public static <T extends WeightedObject<?>> WeightedCollection<T> of(T... objects) {
         WeightedCollection<T> collection = new WeightedCollection<T>();
-        for(int i = 0; i < objects.length; i++) {
-            if(objects[i] == null) {
+        for (int i = 0; i < objects.length; i++) {
+            if (objects[i] == null) {
                 continue;
             }
             collection.add(objects[i]);
+        }
+        return collection;
+    }
+
+    /**
+     * Returns a new {@link WeightedCollection} filled with the weighted objects
+     * within the given collection.
+     * 
+     * @param objects The a collection of weighted objects to fill the new
+     *        collection with
+     * @param <T> The weighted object type
+     * @return A new weighted collection containing the given objects
+     */
+    public static <T extends WeightedObject<?>> WeightedCollection<T> copyOf(Collection<T> objects) {
+        WeightedCollection<T> collection = new WeightedCollection<T>();
+        for (T obj : objects) {
+            if (obj == null) {
+                continue;
+            }
+            collection.add(obj);
         }
         return collection;
     }
@@ -74,7 +103,7 @@ public class WeightedCollection<T extends WeightedObject<?>> implements Collecti
     public T get(Random rand) {
         int target = rand.nextInt(this.totalWeight);
         int current = 0;
-        for (Iterator<T> it = iterator(); it.hasNext(); ) {
+        for (Iterator<T> it = iterator(); it.hasNext();) {
             T obj = it.next();
             current += obj.getWeight();
             if (current > target) {
@@ -195,12 +224,10 @@ public class WeightedCollection<T extends WeightedObject<?>> implements Collecti
         WeightedCollection<?> wc = (WeightedCollection<?>) obj;
         return this.objects.equals(wc.objects);
     }
-    
+
     @Override
     public int hashCode() {
-        int result = 1;
-        result = 37 * result + this.objects.hashCode();
-        return result;
+        return Objects.hashCode(this.objects);
     }
 
     /**

@@ -34,8 +34,20 @@ import org.spongepowered.api.world.gen.PopulatorObject;
 @CatalogedBy(MushroomTypes.class)
 public interface MushroomType extends CatalogType {
 
+    /**
+     * Gets the {@link PopulatorObject} which is used to generate this mushroom
+     * into the world.
+     * 
+     * @return The populator object
+     */
     PopulatorObject getPopulatorObject();
     
+    /**
+     * Sets the {@link PopulatorObject} which is used to generate this mushroom
+     * into the world.
+     * 
+     * @param object The new populator object
+     */
     void setPopulatorObject(PopulatorObject object);
     
 }

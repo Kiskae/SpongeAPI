@@ -24,11 +24,11 @@
  */
 package org.spongepowered.api.world.biome;
 
-import org.spongepowered.api.util.SeededVariableAmount;
-
 import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.base.Objects;
 import org.spongepowered.api.block.BlockState;
+import org.spongepowered.api.util.SeededVariableAmount;
 import org.spongepowered.api.util.VariableAmount;
 
 /**
@@ -41,10 +41,10 @@ public class GroundCoverLayer {
     private SeededVariableAmount<Double> depth;
 
     /**
-     * Creates a new {@link GroundCoverLayer}
+     * Creates a new {@link GroundCoverLayer}.
      * 
-     * @param block
-     * @param depth
+     * @param block The block state to place down for the layer
+     * @param depth The depth of the layer
      */
     public GroundCoverLayer(BlockState block, SeededVariableAmount<Double> depth) {
         this.block = checkNotNull(block, "block");

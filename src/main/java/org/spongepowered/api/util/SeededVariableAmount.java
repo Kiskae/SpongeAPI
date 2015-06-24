@@ -27,7 +27,7 @@ package org.spongepowered.api.util;
 import java.util.Random;
 
 /**
- * Represents a value which may vary depending on a seed object
+ * Represents a value which may vary depending on a seed object.
  * 
  * @param <T> The seed object type
  */
@@ -38,6 +38,7 @@ public abstract class SeededVariableAmount<T> {
      * always return the fixed value.
      * 
      * @param value The fixed value
+     * @param <T> The seed object type
      * @return A variable amount representation
      */
     public static <T> SeededVariableAmount<T> fixed(double value) {
@@ -51,9 +52,24 @@ public abstract class SeededVariableAmount<T> {
      * 
      * @param base The base value
      * @param variance The variance
+     * @param <T> The seed object type
      * @return A variable amount representation
      */
     public static <T> SeededVariableAmount<T> baseWithVariance(double base, double variance) {
+        return new WrappedVariableAmount<T>(VariableAmount.baseWithVariance(base, variance));
+    }
+
+    /**
+     * Creates a new variable about which has a base and variance. The final
+     * amount will be the base amount plus or minus a random amount between zero
+     * (inclusive) and the variance (exclusive).
+     * 
+     * @param base The base value
+     * @param variance The variance
+     * @param <T> The seed object type
+     * @return A variable amount representation
+     */
+    public static <T> SeededVariableAmount<T> baseWithVariance(double base, VariableAmount variance) {
         return new WrappedVariableAmount<T>(VariableAmount.baseWithVariance(base, variance));
     }
 
@@ -64,10 +80,25 @@ public abstract class SeededVariableAmount<T> {
      * 
      * @param base The base value
      * @param addition The additional amount
+     * @param <T> The seed object type
      * @return A variable amount representation
      */
     public static <T> SeededVariableAmount<T> baseWithRandomAddition(double base, double addition) {
-        return new WrappedVariableAmount<T>(VariableAmount.baseWithRandomAddition(base + addition / 2, addition / 2));
+        return new WrappedVariableAmount<T>(VariableAmount.baseWithRandomAddition(base, addition));
+    }
+
+    /**
+     * Creates a new variable amount which has a base and an additional amount.
+     * The final amount will be the base amount plus a random amount between
+     * zero (inclusive) and the additional amount (exclusive).
+     * 
+     * @param base The base value
+     * @param addition The additional amount
+     * @param <T> The seed object type
+     * @return A variable amount representation
+     */
+    public static <T> SeededVariableAmount<T> baseWithRandomAddition(double base, VariableAmount addition) {
+        return new WrappedVariableAmount<T>(VariableAmount.baseWithRandomAddition(base, addition));
     }
 
     /**
@@ -81,9 +112,28 @@ public abstract class SeededVariableAmount<T> {
      * @param base The base value
      * @param variance The variance
      * @param chance The chance to apply the variance
+     * @param <T> The seed object type
      * @return A variable amount representation
      */
     public static <T> SeededVariableAmount<T> baseWithOptionalVariance(double base, double variance, double chance) {
+        return new WrappedVariableAmount<T>(VariableAmount.baseWithOptionalVariance(base, variance, chance));
+    }
+
+    /**
+     * Creates a new variable about which has a base and a chance to apply a
+     * random variance. The chance should be between zero and one with a chance
+     * of one signifying that the variance will always be applied. If the chance
+     * succeeds then the final amount will be the base amount plus or minus a
+     * random amount between zero (inclusive) and the variance (exclusive). If
+     * the chance fails then the final amount will just be the base value.
+     * 
+     * @param base The base value
+     * @param variance The variance
+     * @param chance The chance to apply the variance
+     * @param <T> The seed object type
+     * @return A variable amount representation
+     */
+    public static <T> SeededVariableAmount<T> baseWithOptionalVariance(double base, VariableAmount variance, double chance) {
         return new WrappedVariableAmount<T>(VariableAmount.baseWithOptionalVariance(base, variance, chance));
     }
 
@@ -99,9 +149,29 @@ public abstract class SeededVariableAmount<T> {
      * @param base The base value
      * @param addition The additional amount
      * @param chance The chance to apply the additional amount
+     * @param <T> The seed object type
      * @return A variable amount representation
      */
     public static <T> SeededVariableAmount<T> baseWithOptionalAddition(double base, double addition, double chance) {
+        return new WrappedVariableAmount<T>(VariableAmount.baseWithOptionalAddition(base, addition, chance));
+    }
+
+    /**
+     * Creates a new variable about which has a base and a chance to apply a
+     * random additional amount. The chance should be between zero and one with
+     * a chance of one signifying that the additional amount will always be
+     * applied. If the chance succeeds then the final amount will be the base
+     * amount plus a random amount between zero (inclusive) and the additional
+     * amount (exclusive). If the chance fails then the final amount will just
+     * be the base value.
+     * 
+     * @param base The base value
+     * @param addition The additional amount
+     * @param chance The chance to apply the additional amount
+     * @param <T> The seed object type
+     * @return A variable amount representation
+     */
+    public static <T> SeededVariableAmount<T> baseWithOptionalAddition(double base, VariableAmount addition, double chance) {
         return new WrappedVariableAmount<T>(VariableAmount.baseWithOptionalAddition(base, addition, chance));
     }
 
@@ -171,9 +241,7 @@ public abstract class SeededVariableAmount<T> {
 
         @Override
         public int hashCode() {
-            int result = 1;
-            result = 37 * result + this.inner.hashCode();
-            return result;
+            return this.inner.hashCode();
         }
 
     }

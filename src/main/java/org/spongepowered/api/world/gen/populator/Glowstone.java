@@ -25,7 +25,6 @@
 package org.spongepowered.api.world.gen.populator;
 
 import org.spongepowered.api.util.VariableAmount;
-
 import org.spongepowered.api.world.gen.Populator;
 
 /**
@@ -64,9 +63,19 @@ public interface Glowstone extends Populator {
      * @param attempts The new amount to spawn
      */
     void setAttemptsPerCluster(VariableAmount attempts);
-    
+
+    /**
+     * Gets the height range of the glowstone cluster.
+     * 
+     * @return The height range
+     */
     VariableAmount getHeightRange();
-    
+
+    /**
+     * Sets the height range of the glowstone cluster.
+     * 
+     * @param height The new height range
+     */
     void setHeightRange(VariableAmount height);
 
     /**
@@ -91,7 +100,13 @@ public interface Glowstone extends Populator {
          * @return This builder, for chaining
          */
         Builder blocksPerCluster(VariableAmount attempts);
-        
+
+        /**
+         * Sets the height range of the glowstone cluster.
+         * 
+         * @param height The new height range
+         * @return This builder, for chaining
+         */
         Builder heightRange(VariableAmount height);
 
         /**

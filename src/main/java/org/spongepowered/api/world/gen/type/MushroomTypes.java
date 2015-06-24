@@ -25,7 +25,7 @@
 package org.spongepowered.api.world.gen.type;
 
 /**
- * A enumeration of known {@link MushroomType}s.
+ * An enumeration of known {@link MushroomType}s.
  */
 public final class MushroomTypes {
 

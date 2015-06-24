@@ -30,6 +30,7 @@ import org.spongepowered.api.world.biome.BiomeType;
 
 import java.util.List;
 
+//@formatter:off
 /**
  * Represents the world generator of a world. This interface contains all
  * settings for the world generator, like which populators are in use, but also
@@ -47,28 +48,36 @@ import java.util.List;
  * placement of small features and objects placed may cross chunk
  * boundaries.</p>
  * 
- * <ol><strong>The generation phase:</strong> <li>Create a BlockBuffer
- * representing the chunk's area</li> <li>Call the
- * {@link #getBaseGeneratorPopulator() base GeneratorPopulator} from the
- * WorldGenerator to create the base terrain shape.</li> <li>Call each of the
- * {@link BiomeType#getGeneratorPopulators() GeneratorPopulators} registered to
- * the BiomeType.</li> <li>Call each of the {@link #getGeneratorPopulators()
- * GeneratorPopulators} registered to the WorldGenerator.</li> <li>Build the
- * final Chunk object from the contents of the BlockBuffer.</li> </ol>
+ * <ol><strong>The generation phase:</strong>
+ *   <li>Create a BlockBufferrepresenting the chunk's area</li>
+ *   <li>Call the {@link #getBaseGeneratorPopulator() base GeneratorPopulator}
+ *     from the WorldGenerator to create the base terrain shape.</li>
+ *   <li>Call each of the
+ *     {@link BiomeGenerationSettings#getGeneratorPopulators()
+ *     GeneratorPopulators} registered to the BiomeType (or from an override if
+ *     found).</li>
+ *   <li>Call each of the {@link #getGeneratorPopulators() GeneratorPopulators}
+ *     registered to the WorldGenerator.</li>
+ *   <li>Build thefinal Chunk object from the contents of the BlockBuffer.</li>
+ * </ol>
  * 
- * <ol><strong>The population phase:</strong> <li>Validate surrounding
- * chunks.</li> <li>Using the biome at an arbitrary point within the chunk ({16,
- * 0, 16} in the vanilla game), pass the chunk to each of the
- * {@link BiomeType#getPopulators() Populators} registered to the chosen
- * biome.</li> <li>Pass the chunk to each of the {@link #getPopulators()
- * Populators} registered to the WorldGenerator.</li> </ol>
+ * <ol><strong>The population phase:</strong>
+ *   <li>Validate surrounding chunks.</li>
+ *   <li>Using the biome at an arbitrary point within the chunk ({16, 0, 16} in
+ *     the vanilla game), pass the chunk to each of the
+ *     {@link BiomeGenerationSettings#getPopulators() Populators} registered to
+ *     the chosen biome (or from an override if found).</li>
+ *   <li>Pass the chunk to each of the {@link #getPopulators() Populators}
+ *     registered to the WorldGenerator.</li>
+ * </ol>
  */
+//@formatter:on
 public interface WorldGenerator {
 
     /**
      * Gets the main {@link GeneratorPopulator}. This generator populator is
      * responsible for generating the base terrain of the chunk.
-     * 
+     *
      * @return The {@link GeneratorPopulator}.
      * @see #setBaseGeneratorPopulator(GeneratorPopulator)
      */
@@ -77,7 +86,7 @@ public interface WorldGenerator {
     /**
      * Sets the {@link GeneratorPopulator}. This generator populator is
      * responsible for generating the base terrain of the chunk.
-     * 
+     *
      * @param generator The generator.
      */
     void setBaseGeneratorPopulator(GeneratorPopulator generator);
@@ -85,14 +94,15 @@ public interface WorldGenerator {
     /**
      * Gets a mutable list of {@link GeneratorPopulator}s. These populators work
      * strictly on a single chunk. They will be executed directly after the
-     * {@link BiomeType#getGroundCover() biome ground cover layers} and the
-     * {@link BiomeType#getGeneratorPopulators() biome generator populators}
-     * have been called. These generator populators are typically used to
-     * generate large terrain features, like caves and ravines.
-     * 
+     * {@link BiomeGenerationSettings#getGroundCoverLayers() biome ground cover
+     * layers} and the {@link BiomeGenerationSettings#getGeneratorPopulators()
+     * biome generator populators} have been called. These generator populators
+     * are typically used to generate large terrain features, like caves and
+     * ravines.
+     *
      * <p>This list does not include {@link #getBaseGeneratorPopulator() the
      * base generator}.</p>
-     * 
+     *
      * @return The generator populators
      */
     List<GeneratorPopulator> getGeneratorPopulators();
@@ -100,22 +110,22 @@ public interface WorldGenerator {
     /**
      * Gets a mutable list of {@link Populator}s which are applied globally (in
      * the whole world).
-     * 
-     * @see BiomeType#getPopulators()
+     *
+     * @see BiomeGenerationSettings#getPopulators()
      * @return The populators
      */
     List<Populator> getPopulators();
 
     /**
      * Gets the {@link BiomeGenerator} for this world generator.
-     * 
+     *
      * @return The biome generator
      */
     BiomeGenerator getBiomeGenerator();
 
     /**
      * Sets the {@link BiomeGenerator} for this world generator.
-     * 
+     *
      * @param biomeGenerator The new biome generator
      */
     void setBiomeGenerator(BiomeGenerator biomeGenerator);
@@ -123,7 +133,7 @@ public interface WorldGenerator {
     /**
      * Gets this world generator's override for the given {@link BiomeType} if
      * it exists.
-     * 
+     *
      * @param type The biome type
      * @return The overriding settings, if they exist
      */
@@ -132,7 +142,7 @@ public interface WorldGenerator {
     /**
      * Gets whether this world generator has an override specified for the given
      * {@link BiomeType}.
-     * 
+     *
      * @param type The biome type
      * @return Is overridden
      */
@@ -141,7 +151,7 @@ public interface WorldGenerator {
     /**
      * Sets the given {@link BiomeType} to be overriden with the given
      * {@link BiomeGenerationSettings}.
-     * 
+     *
      * @param type The biome type to override
      * @param settings The overriding settings
      */

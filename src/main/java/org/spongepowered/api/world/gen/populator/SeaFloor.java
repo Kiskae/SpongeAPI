@@ -78,13 +78,36 @@ public interface SeaFloor extends Populator {
      * @param radius The new disc radius
      */
     void setRadius(VariableAmount radius);
-    
+
+    /**
+     * Gets the depth of the sea floor cover to generate.
+     * 
+     * @return The depth
+     */
     VariableAmount getDepth();
-    
+
+    /**
+     * Sets the depth of the sea floor cover to generate.
+     * 
+     * @param depth The new depth
+     */
     void setDepth(VariableAmount depth);
 
+    /**
+     * Gets the predicate which is applied to determine what {@link BlockState}s
+     * this populator may replace.
+     * 
+     * @return The replacement check
+     */
     Predicate<BlockState> getValidBlocksToReplace();
 
+    /**
+     * Sets the predicate which will be applied to all {@link BlockState}s that
+     * this populator attempts to replace in order to determine if they are
+     * valid.
+     * 
+     * @param check The new replacement check
+     */
     void setValidBlocksToReplace(Predicate<BlockState> check);
 
     /**
@@ -116,9 +139,23 @@ public interface SeaFloor extends Populator {
          * @return This builder, for chaining
          */
         Builder radius(VariableAmount radius);
-        
+
+        /**
+         * Sets the depth of the sea floor cover to generate.
+         * 
+         * @param depth The new depth
+         * @return This builder, for chaining
+         */
         Builder depth(VariableAmount depth);
 
+        /**
+         * Sets the predicate which will be applied to all {@link BlockState}s
+         * that this populator attempts to replace in order to determine if they
+         * are valid.
+         * 
+         * @param check The new replacement check
+         * @return This builder, for chaining
+         */
         Builder replace(Predicate<BlockState> check);
 
         /**

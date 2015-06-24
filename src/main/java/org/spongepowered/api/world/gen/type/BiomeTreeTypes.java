@@ -25,7 +25,7 @@
 package org.spongepowered.api.world.gen.type;
 
 /**
- * A enumeration of known {@link BiomeTreeType}s.
+ * An enumeration of known {@link BiomeTreeType}s.
  */
 public final class BiomeTreeTypes {
 

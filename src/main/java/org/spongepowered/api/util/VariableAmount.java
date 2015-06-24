@@ -72,22 +72,8 @@ public abstract class VariableAmount implements DataSerializable {
      * @param variance The variance
      * @return A variable amount representation
      */
-    public static VariableAmount baseWithVariance(double base,
-            VariableAmount variance) {
+    public static VariableAmount baseWithVariance(double base, VariableAmount variance) {
         return new BaseAndVariance(base, variance);
-    }
-
-    /**
-     * Creates a new variable amount which has a base and an additional amount.
-     * The final amount will be the base amount plus a random amount between
-     * zero (inclusive) and the additional amount (exclusive).
-     * 
-     * @param base The base value
-     * @param addition The additional amount
-     * @return A variable amount representation
-     */
-    public static VariableAmount baseWithRandomAddition(double base, VariableAmount addition) {
-        return new BaseAndAddition(base, addition);
     }
 
     /**
@@ -101,6 +87,19 @@ public abstract class VariableAmount implements DataSerializable {
      */
     public static VariableAmount baseWithRandomAddition(double base, double addition) {
         return new BaseAndAddition(base, VariableAmount.fixed(addition));
+    }
+
+    /**
+     * Creates a new variable amount which has a base and an additional amount.
+     * The final amount will be the base amount plus a random amount between
+     * zero (inclusive) and the additional amount (exclusive).
+     * 
+     * @param base The base value
+     * @param addition The additional amount
+     * @return A variable amount representation
+     */
+    public static VariableAmount baseWithRandomAddition(double base, VariableAmount addition) {
+        return new BaseAndAddition(base, addition);
     }
 
     /**
@@ -122,6 +121,23 @@ public abstract class VariableAmount implements DataSerializable {
 
     /**
      * Creates a new variable about which has a base and a chance to apply a
+     * random variance. The chance should be between zero and one with a chance
+     * of one signifying that the variance will always be applied. If the chance
+     * succeeds then the final amount will be the base amount plus or minus a
+     * random amount between zero (inclusive) and the variance (exclusive). If
+     * the chance fails then the final amount will just be the base value.
+     * 
+     * @param base The base value
+     * @param variance The variance
+     * @param chance The chance to apply the variance
+     * @return A variable amount representation
+     */
+    public static VariableAmount baseWithOptionalVariance(double base, VariableAmount variance, double chance) {
+        return new OptionalAmount(base, chance, baseWithVariance(base, variance));
+    }
+
+    /**
+     * Creates a new variable about which has a base and a chance to apply a
      * random additional amount. The chance should be between zero and one with
      * a chance of one signifying that the additional amount will always be
      * applied. If the chance succeeds then the final amount will be the base
@@ -135,6 +151,24 @@ public abstract class VariableAmount implements DataSerializable {
      * @return A variable amount representation
      */
     public static VariableAmount baseWithOptionalAddition(double base, double addition, double chance) {
+        return new OptionalAmount(base, chance, baseWithRandomAddition(base, addition));
+    }
+
+    /**
+     * Creates a new variable about which has a base and a chance to apply a
+     * random additional amount. The chance should be between zero and one with
+     * a chance of one signifying that the additional amount will always be
+     * applied. If the chance succeeds then the final amount will be the base
+     * amount plus a random amount between zero (inclusive) and the additional
+     * amount (exclusive). If the chance fails then the final amount will just
+     * be the base value.
+     * 
+     * @param base The base value
+     * @param addition The additional amount
+     * @param chance The chance to apply the additional amount
+     * @return A variable amount representation
+     */
+    public static VariableAmount baseWithOptionalAddition(double base, VariableAmount addition, double chance) {
         return new OptionalAmount(base, chance, baseWithRandomAddition(base, addition));
     }
 
@@ -252,6 +286,13 @@ public abstract class VariableAmount implements DataSerializable {
             return result;
         }
 
+        @Override
+        public DataContainer toContainer() {
+            return new MemoryDataContainer()
+                .set(of("Base"), this.base)
+                .set(of("Variance"), this.variance);
+        }
+
     }
 
     /**
@@ -303,7 +344,7 @@ public abstract class VariableAmount implements DataSerializable {
         public DataContainer toContainer() {
             return new MemoryDataContainer()
                 .set(of("Base"), this.base)
-                .set(of("Variance"), this.variance);
+                .set(of("Variance"), this.addition);
         }
     }
 

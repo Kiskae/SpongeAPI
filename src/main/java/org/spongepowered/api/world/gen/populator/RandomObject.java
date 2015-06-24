@@ -46,16 +46,55 @@ public interface RandomObject extends Populator {
      */
     void setAttemptsPerChunk(VariableAmount count);
 
+    /**
+     * Gets the height range that the object will be placed within.
+     * 
+     * @return The height range
+     */
     VariableAmount getHeightRange();
 
+    /**
+     * Sets the height range that the object will be placed within.
+     * 
+     * @param height The new height range
+     */
     void setHeightRange(VariableAmount height);
 
+    /**
+     * Gets the {@link PopulatorObject} that this populator will attempt to
+     * place.
+     * 
+     * @return The populator object
+     */
     PopulatorObject getObject();
 
+    /**
+     * Sets the {@link PopulatorObject} for this populator to attempt to place.
+     * 
+     * @param obj The new populator object
+     */
     void setObject(PopulatorObject obj);
 
+    /**
+     * Gets the chance of spawning the object for each attempt. This chance is
+     * applied before the checks for if the placement is valid. This value must
+     * be between zero and one (inclusive) with a chance of zero representing no
+     * chance of the object being placed, and a chance of 1 representing a 100%
+     * chance of the object being placed.
+     * 
+     * @return The spawn chance
+     */
     double getSpawnChance();
 
+    /**
+     * Sets the chance of spawning the object for each attempt. This chance is
+     * applied before the checks for if the placement is valid. This value must
+     * be between zero and one (inclusive) with a chance of zero representing no
+     * chance of the object being placed, and a chance of 1 representing a 100%
+     * chance of the object being placed.
+     * 
+     * @param chance The new spawn chance
+     */
     void setSpawnChance(double chance);
 
     /**
@@ -70,12 +109,35 @@ public interface RandomObject extends Populator {
          * @param count The new number to spawn
          * @return This builder, for chaining
          */
-		Builder perChunk(VariableAmount count);
+        Builder perChunk(VariableAmount count);
 
+        /**
+         * Sets the height range that the object will be placed within.
+         * 
+         * @param height The new height range
+         * @return This builder, for chaining
+         */
         Builder height(VariableAmount height);
 
+        /**
+         * Sets the {@link PopulatorObject} for the populator to attempt to
+         * place.
+         * 
+         * @param obj The new populator object
+         * @return This builder, for chaining
+         */
         Builder object(PopulatorObject obj);
 
+        /**
+         * Sets the chance of spawning the object for each attempt. This chance
+         * is applied before the checks for if the placement is valid. This
+         * value must be between zero and one (inclusive) with a chance of zero
+         * representing no chance of the object being placed, and a chance of 1
+         * representing a 100% chance of the object being placed.
+         * 
+         * @param chance The new spawn chance
+         * @return This builder, for chaining
+         */
         Builder spawnChance(double chance);
 
         /**

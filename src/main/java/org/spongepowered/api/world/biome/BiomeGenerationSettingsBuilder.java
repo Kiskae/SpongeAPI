@@ -85,7 +85,7 @@ public interface BiomeGenerationSettingsBuilder {
     /**
      * Sets the {@link Populator}s for the biome.
      * 
-     * @param genpops The populators
+     * @param pops The populators
      * @return This builder, for chaining
      */
     BiomeGenerationSettingsBuilder populators(Populator... pops);
@@ -93,7 +93,7 @@ public interface BiomeGenerationSettingsBuilder {
     /**
      * Sets the {@link Populator}s for the biome.
      * 
-     * @param genpops The populators
+     * @param pops The populators
      * @return This builder, for chaining
      */
     BiomeGenerationSettingsBuilder populators(Collection<Populator> pops);

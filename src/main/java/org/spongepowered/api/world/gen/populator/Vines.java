@@ -50,7 +50,7 @@ public interface Vines extends Populator {
          * 
          * @return A new instance of the populator
          * @throws IllegalStateException If there are any settings left unset
-         *             which do not have default values
+         *         which do not have default values
          */
         Vines build() throws IllegalStateException;
 

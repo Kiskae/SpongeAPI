@@ -30,7 +30,7 @@ import org.spongepowered.api.world.gen.Populator;
 import java.util.List;
 
 /**
- * A representation of the biome-specific settings
+ * A representation of the biome-specific generation settings.
  */
 public interface BiomeGenerationSettings {
 
@@ -74,7 +74,7 @@ public interface BiomeGenerationSettings {
     /**
      * Gets a mutable list of {@link GeneratorPopulator}s. These populators work
      * strictly on a single chunk. They will be executed directly after the
-     * {@link #getGroundCover() ground cover layers} are applied. These
+     * {@link #getGroundCoverLayers() ground cover layers} are applied. These
      * generator populators are typically used to generate large terrain
      * features, like caves and ravines.
      * 

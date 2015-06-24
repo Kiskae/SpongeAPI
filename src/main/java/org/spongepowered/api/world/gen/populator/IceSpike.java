@@ -31,9 +31,19 @@ import org.spongepowered.api.world.gen.Populator;
  * Represents a populator which generates large spikes of Ice.
  */
 public interface IceSpike extends Populator {
-    
+
+    /**
+     * Gets the number of spikes to generate per chunk.
+     * 
+     * @return The number of spikes
+     */
     VariableAmount getSpikesPerChunk();
-    
+
+    /**
+     * Sets the number of spikes to generate per chunk.
+     * 
+     * @param count The new number of spikes
+     */
     void setSpikesPerChunk(VariableAmount count);
 
     /**
@@ -83,6 +93,14 @@ public interface IceSpike extends Populator {
      * A builder for constructing {@link IceSpike} populators.
      */
     interface Builder {
+
+        /**
+         * Sets the number of spikes to generate per chunk.
+         * 
+         * @param count The new number of spikes
+         * @return This builder, for chaining
+         */
+        Builder spikesPerChunk(VariableAmount count);
 
         /**
          * Sets the base height of the spike.

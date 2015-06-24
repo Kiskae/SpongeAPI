@@ -174,8 +174,8 @@ public interface Dungeon extends Populator {
         Builder spawnRange(short range);
 
         /**
-         * Defines a number of {@link WeightedEntity}s from which the type
-         * of each batch will be randomly selected based on the weighting value.
+         * Defines a number of {@link WeightedEntity}s from which the type of
+         * each batch will be randomly selected based on the weighting value.
          *
          * @param entities The possible entities
          * @return This builder, for chaining
@@ -183,8 +183,8 @@ public interface Dungeon extends Populator {
         Builder possibleEntities(WeightedEntity... entities);
 
         /**
-         * Defines a number of {@link WeightedEntity}s from which the type
-         * of each batch will be randomly selected based on the weighting value.
+         * Defines a number of {@link WeightedEntity}s from which the type of
+         * each batch will be randomly selected based on the weighting value.
          *
          * @param entities The possible entities
          * @return This builder, for chaining
@@ -192,9 +192,9 @@ public interface Dungeon extends Populator {
         Builder possibleEntities(Collection<WeightedEntity> entities);
 
         /**
-         * Defines a number of {@link WeightedItem}s from which items will
-         * be randomly selected based on weight in order to calculate the
-         * contents of chests placed within the dungeon.
+         * Defines a number of {@link WeightedItem}s from which items will be
+         * randomly selected based on weight in order to calculate the contents
+         * of chests placed within the dungeon.
          *
          * @param items The possible items
          * @return This builder, for chaining
@@ -202,9 +202,9 @@ public interface Dungeon extends Populator {
         Builder possibleItems(WeightedItem... items);
 
         /**
-         * Defines a number of {@link WeightedItem}s from which items will
-         * be randomly selected based on weight in order to calculate the
-         * contents of chests placed within the dungeon.
+         * Defines a number of {@link WeightedItem}s from which items will be
+         * randomly selected based on weight in order to calculate the contents
+         * of chests placed within the dungeon.
          *
          * @param items The possible items
          * @return This builder, for chaining

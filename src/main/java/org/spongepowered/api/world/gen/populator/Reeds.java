@@ -48,9 +48,19 @@ public interface Reeds extends Populator {
      * @param count The new amount to spawn
      */
     void setReedsPerChunk(VariableAmount count);
-    
+
+    /**
+     * Gets the height of the reeds to generate.
+     * 
+     * @return The reed height
+     */
     VariableAmount getReedHeight();
-    
+
+    /**
+     * Sets the height of the reeds to generate.
+     * 
+     * @param height The new reed height
+     */
     void setReedHeight(VariableAmount height);
 
     /**
@@ -66,7 +76,13 @@ public interface Reeds extends Populator {
          * @return This builder, for chaining
          */
         Builder perChunk(VariableAmount count);
-        
+
+        /**
+         * Sets the height of the reeds to generate.
+         * 
+         * @param height The new reed height
+         * @return This builder, for chaining
+         */
         Builder reedHeight(VariableAmount height);
 
         /**
@@ -82,7 +98,7 @@ public interface Reeds extends Populator {
          * 
          * @return A new instance of the populator
          * @throws IllegalStateException If there are any settings left unset
-         *             which do not have default values
+         *         which do not have default values
          */
         Reeds build() throws IllegalStateException;
 

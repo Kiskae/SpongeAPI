@@ -25,7 +25,6 @@
 package org.spongepowered.api.world.gen.populator;
 
 import com.google.common.base.Predicate;
-
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.util.VariableAmount;
 import org.spongepowered.api.world.gen.Populator;
@@ -95,9 +94,19 @@ public interface Ore extends Populator {
      * @param height The new height
      */
     void setHeight(VariableAmount height);
-    
+
+    /**
+     * Gets a predicate which checks for the placement conditions for this ore.
+     * 
+     * @return The placement conditions check
+     */
     Predicate<BlockState> getPlacementCondition();
-    
+
+    /**
+     * Sets a predicate which checks for the placement conditions for this ore.
+     * 
+     * @param condition The new placement conditions check
+     */
     void setPlacementCondition(Predicate<BlockState> condition);
 
     /**
@@ -138,7 +147,7 @@ public interface Ore extends Populator {
          * @return This builder, for chaining
          */
         Builder height(VariableAmount height);
-        
+
         Builder placementCondition(Predicate<BlockState> condition);
 
         /**

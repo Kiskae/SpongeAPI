@@ -24,13 +24,12 @@
  */
 package org.spongepowered.api.world.gen.populator;
 
+import com.google.common.base.Predicate;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockType;
 import org.spongepowered.api.util.VariableAmount;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.gen.Populator;
-
-import com.google.common.base.Predicate;
 
 /**
  * Represents a populator which creates random distributions of singular blocks,
@@ -68,8 +67,18 @@ public interface RandomBlock extends Populator {
      */
     void setAttemptsPerChunk(VariableAmount count);
 
+    /**
+     * Gets the height range that the block may be randomly placed within.
+     * 
+     * @return The height range
+     */
     VariableAmount getHeightRange();
 
+    /**
+     * Sets the height range that the blocks may be randomly placed within.
+     * 
+     * @param height The new height range
+     */
     void setHeightRange(VariableAmount height);
 
     /**
@@ -121,7 +130,13 @@ public interface RandomBlock extends Populator {
          */
         Builder placementTarget(Predicate<Location> target);
 
-		Builder height(VariableAmount height);
+        /**
+         * Sets the height range of the random block placement.
+         * 
+         * @param height The new height range
+         * @return This builder, for chaining
+         */
+        Builder height(VariableAmount height);
 
         /**
          * Resets this builder to the default values.
