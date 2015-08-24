@@ -41,3 +41,8 @@ jar {
         attributes('Main-Class': 'org.spongepowered.api.util.InformativeMain')
     }
 }
+
+task sourceJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
