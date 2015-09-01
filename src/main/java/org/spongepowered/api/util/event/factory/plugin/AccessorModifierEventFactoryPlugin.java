@@ -55,6 +55,7 @@ import org.spongepowered.api.util.event.factory.EventFactoryPlugin;
 import org.spongepowered.api.util.reflect.AccessorFirstStrategy;
 import org.spongepowered.api.util.reflect.Property;
 import org.spongepowered.api.util.reflect.PropertySearchStrategy;
+import org.spongepowered.api.util.reflect.classwrapper.reflection.ReflectionClassWrapper;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -95,7 +96,7 @@ public class AccessorModifierEventFactoryPlugin implements EventFactoryPlugin {
     }
 
     private boolean canGenerate(Class<?> eventClass) {
-        final ImmutableSet<? extends Property> properties = propertySearch.findProperties(eventClass);
+        final ImmutableSet<? extends Property> properties = propertySearch.findProperties(new ReflectionClassWrapper(eventClass));
         Collection<MethodPair> pairs = this.getLinkedFields(properties);
         return !pairs.isEmpty();
     }
@@ -105,7 +106,7 @@ public class AccessorModifierEventFactoryPlugin implements EventFactoryPlugin {
         String name = this.targetPackage + "." + "Abstract" + eventClass.getSimpleName();
         String internalName = name.replace('.', '/');
 
-        final ImmutableSet<? extends Property> properties = propertySearch.findProperties(eventClass);
+        final ImmutableSet<? extends Property> properties = propertySearch.findProperties(new ReflectionClassWrapper(eventClass));
         Collection<MethodPair> pairs = this.getLinkedFields(properties);
         if (pairs.isEmpty()) {
             return this.superClass;
@@ -130,7 +131,7 @@ public class AccessorModifierEventFactoryPlugin implements EventFactoryPlugin {
         }
 
         for (MethodPair pair: pairs) {
-            Property property = pair.getProperty();
+            Property<Class, Method> property = pair.getProperty();
             Method accessor = property.getAccessor();
 
             if (property.isLeastSpecificType()) {
@@ -167,7 +168,7 @@ public class AccessorModifierEventFactoryPlugin implements EventFactoryPlugin {
 
     private Collection<MethodPair> getLinkedFields(Set<? extends Property> properties) {
         Map<Property, Map<String, MethodPair>> methodPairs = Maps.newHashMap();
-        for (Property property: properties) {
+        for (Property<Class, Method> property: properties) {
             if (!methodPairs.containsKey(property)) {
                 methodPairs.put(property, new HashMap<String, MethodPair>());
             }

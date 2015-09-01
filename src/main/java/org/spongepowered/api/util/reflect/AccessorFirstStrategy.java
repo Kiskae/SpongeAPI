@@ -31,9 +31,10 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import org.spongepowered.api.util.reflect.classwrapper.ClassWrapper;
+import org.spongepowered.api.util.reflect.classwrapper.MethodWrapper;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,37 +46,16 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 /**
+ *
  * Finds properties by enumerating accessors and then later finding the
  * closest matching mutator.
  */
-public class AccessorFirstStrategy implements PropertySearchStrategy {
+public class AccessorFirstStrategy<T, M> implements PropertySearchStrategy<T, M> {
 
-    private static final Pattern ACCESSOR = Pattern.compile("^get([A-Z].*)");
-    private static final Pattern ACCESSOR_BOOL = Pattern.compile("^is([A-Z].*)");
-    private static final Pattern ACCESSOR_KEEPS = Pattern.compile("^(keeps[A-Z].*)");
-    private static final Pattern MUTATOR = Pattern.compile("^set([A-Z].*)");
-
-    /**
-     * Find the corresponding mutator for an accessor method from a collection
-     * of candidates.
-     *
-     * @param accessor The accessor
-     * @param candidates The collection of candidates
-     * @return A mutator, if found
-     */
-    @Nullable
-    private static Method findMutator(Method accessor, Collection<Method> candidates) {
-        Class<?> expectedType = accessor.getReturnType();
-
-        for (Method method : candidates) {
-            // TODO: Handle supertypes
-            if (method.getParameterTypes()[0] == expectedType || expectedType == Optional.class) {
-                return method;
-            }
-        }
-
-        return null;
-    }
+    protected static final Pattern ACCESSOR = Pattern.compile("^get([A-Z].*)");
+    protected static final Pattern ACCESSOR_BOOL = Pattern.compile("^is([A-Z].*)");
+    protected static final Pattern ACCESSOR_KEEPS = Pattern.compile("^(keeps[A-Z].*)");
+    protected static final Pattern MUTATOR = Pattern.compile("^set([A-Z].*)");
 
     /**
      * Detect whether the given method is an accessor and if so, return the
@@ -84,26 +64,29 @@ public class AccessorFirstStrategy implements PropertySearchStrategy {
      * @param method The method
      * @return The property name, if the method is an accessor
      */
-    @Nullable
-    private static String getAccessorName(Method method) {
+    protected String getAccessorName(MethodWrapper<T, M> method) {
         Matcher m;
 
-        if (Modifier.isPublic(method.getModifiers()) && method.getParameterTypes().length == 0) {
-            m = ACCESSOR.matcher(method.getName());
-            if (m.matches() && !method.getReturnType().equals(void.class)) {
-                return getPropertyName(m.group(1));
+        if (method.isPublic() && method.getParameterTypes().size() == 0) {
+            String methodName = method.getName();
+            T returnType = method.getReturnType().getActualClass();
+
+            m = ACCESSOR.matcher(methodName);
+            if (m.matches() && !returnType.equals(void.class)) {
+                return this.getPropertyName(m.group(1));
             }
 
-            m = ACCESSOR_BOOL.matcher(method.getName());
-            if (m.matches() && method.getReturnType().equals(boolean.class)) {
-                return getPropertyName(m.group(1));
+            m = ACCESSOR_BOOL.matcher(methodName);
+            if (m.matches() && returnType.equals(boolean.class)) {
+                return this.getPropertyName(m.group(1));
             }
 
-            m = ACCESSOR_KEEPS.matcher(method.getName());
-            if (m.matches() && method.getReturnType().equals(boolean.class)) {
-                return getPropertyName(m.group(1));
+            m = ACCESSOR_KEEPS.matcher(methodName);
+            if (m.matches() && returnType.equals(boolean.class)) {
+                return this.getPropertyName(m.group(1));
             }
         }
+
         return null;
     }
 
@@ -115,10 +98,10 @@ public class AccessorFirstStrategy implements PropertySearchStrategy {
      * @return The property name, if the method is an mutator
      */
     @Nullable
-    private static String getMutatorName(Method method) {
+    private String getMutatorName(MethodWrapper<T, M> method) {
         Matcher m;
 
-        if (Modifier.isPublic(method.getModifiers()) && method.getParameterTypes().length == 1 && method.getReturnType() == void.class) {
+        if (method.isPublic() && method.getParameterTypes().size() == 1 && method.getReturnType().getActualClass().equals(void.class)) {
             m = MUTATOR.matcher(method.getName());
             if (m.matches()) {
                 return getPropertyName(m.group(1));
@@ -134,42 +117,64 @@ public class AccessorFirstStrategy implements PropertySearchStrategy {
      * @param name The name
      * @return The cleaned up name
      */
-    private static String getPropertyName(String name) {
+    protected String getPropertyName(String name) {
         return Character.toLowerCase(name.charAt(0)) + name.substring(1);
     }
 
+    /**
+     * Find the corresponding mutator for an accessor method from a collection
+     * of candidates.
+     *
+     * @param accessor The accessor
+     * @param candidates The collection of candidates
+     * @return A mutator, if found
+     */
+    @Nullable
+    protected MethodWrapper<T, M> findMutator(MethodWrapper<T, M> accessor, Collection<MethodWrapper<T, M>> candidates) {
+        T expectedType = accessor.getReturnType().getActualClass();
+
+        for (MethodWrapper<T, M> method : candidates) {
+            // TODO: Handle supertypes
+            if (method.getParameterTypes().get(0).getActualClass().equals(expectedType) || expectedType.equals(Optional.class)) {
+                return method;
+            }
+        }
+
+        return null;
+    }
+
     @Override
-    public ImmutableSet<? extends Property> findProperties(final Class<?> type) {
+    public ImmutableSet<? extends Property> findProperties(final ClassWrapper<T, M> type) {
         checkNotNull(type, "type");
 
-        final Multimap<String, Method> accessors = HashMultimap.create();
-        final Multimap<String, Method> mutators = HashMultimap.create();
-        final Queue<Class<?>> queue = new NonNullUniqueQueue<Class<?>>();
-        final Map<String, Method> accessorHierarchyBottoms = new HashMap<String, Method>();
+        final Multimap<String, MethodWrapper<T, M>> accessors = HashMultimap.create();
+        final Multimap<String, MethodWrapper<T, M>> mutators = HashMultimap.create();
+        final Queue<ClassWrapper<T, M>> queue = new NonNullUniqueQueue<ClassWrapper<T, M>>();
+        final Map<String, MethodWrapper<T, M>> accessorHierarchyBottoms = new HashMap<String, MethodWrapper<T, M>>();
         final Set<String> signatures = Sets.newHashSet();
 
         queue.add(type); // Start off with our target type
 
-        Class<?> scannedType;
+        ClassWrapper<T, M> scannedType;
         while ((scannedType = queue.poll()) != null) {
-            for (Method method : scannedType.getMethods()) {
+            for (MethodWrapper<T, M> method : scannedType.getMethods()) {
                 String name;
 
                 String signature = method.getName() + ";";
-                for (Class<?> parameterType: method.getParameterTypes()) {
+                for (ClassWrapper<T, M> parameterType: method.getParameterTypes()) {
                     signature += parameterType.getName() + ";";
                 }
                 signature += method.getReturnType().getName();
 
-                Method leastSpecificMethod;
+                MethodWrapper<T, M> leastSpecificMethod;
                 if ((name = getAccessorName(method)) != null && !signatures.contains(signature)
                         && ((leastSpecificMethod = accessorHierarchyBottoms.get(name)) == null
-                                || leastSpecificMethod.getReturnType() != method.getReturnType())) {
+                                    || !leastSpecificMethod.getReturnType().equals(method.getReturnType()))) {
                     accessors.put(name, method);
                     signatures.add(signature);
 
                     if (accessorHierarchyBottoms.get(name) == null
-                        || method.getReturnType().isAssignableFrom(accessorHierarchyBottoms.get(name).getReturnType())) {
+                            || method.getReturnType().isAssignableFrom(accessorHierarchyBottoms.get(name).getReturnType())) {
                         accessorHierarchyBottoms.put(name, method);
                     }
                 } else if ((name = getMutatorName(method)) != null) {
@@ -177,7 +182,7 @@ public class AccessorFirstStrategy implements PropertySearchStrategy {
                 }
             }
 
-            for (Class<?> implInterfaces : scannedType.getInterfaces()) {
+            for (ClassWrapper<T, M> implInterfaces : scannedType.getInterfaces()) {
                 queue.offer(implInterfaces);
             }
             queue.offer(scannedType.getSuperclass());
@@ -185,10 +190,11 @@ public class AccessorFirstStrategy implements PropertySearchStrategy {
 
         final ImmutableSet.Builder<Property> result = ImmutableSet.builder();
 
-        for (Map.Entry<String, Method> entry : accessors.entries()) {
-            Method accessor = entry.getValue();
-            @Nullable Method mutator = findMutator(entry.getValue(), mutators.get(entry.getKey()));
-            result.add(new Property(entry.getKey(), accessor.getReturnType(), accessorHierarchyBottoms.get(entry.getKey()), accessor, mutator));
+        for (Map.Entry<String, MethodWrapper<T, M>> entry : accessors.entries()) {
+            MethodWrapper<T, M> accessor = entry.getValue();
+
+            @Nullable MethodWrapper<T, M> mutator = findMutator(entry.getValue(), mutators.get(entry.getKey()));
+            result.add(new Property<T, M>(entry.getKey(), accessor.getReturnType(), accessorHierarchyBottoms.get(entry.getKey()), accessor, mutator));
         }
 
         return result.build();

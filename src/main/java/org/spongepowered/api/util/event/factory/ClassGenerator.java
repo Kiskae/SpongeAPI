@@ -71,11 +71,13 @@ import org.spongepowered.api.util.annotation.SetField;
 import org.spongepowered.api.util.reflect.AccessorFirstStrategy;
 import org.spongepowered.api.util.reflect.Property;
 import org.spongepowered.api.util.reflect.PropertySearchStrategy;
+import org.spongepowered.api.util.reflect.classwrapper.reflection.ReflectionClassWrapper;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -84,7 +86,7 @@ import javax.annotation.Nullable;
  */
 public class ClassGenerator {
 
-    private final PropertySearchStrategy propertySearch = new AccessorFirstStrategy();
+    private final PropertySearchStrategy propertySearch = new AccessorFirstStrategy<Class, Method>();
     private NullPolicy nullPolicy = NullPolicy.DISABLE_PRECONDITIONS;
     private final List<String> primitivePropertyExceptions = ImmutableList.of("cancelled");
 
@@ -245,6 +247,14 @@ public class ClassGenerator {
         this.nullPolicy = nullPolicy;
     }
 
+    private boolean hasNullable(Method method) {
+        return method.getAnnotation(Nullable.class) != null;
+    }
+
+    private boolean hasNonnull(Method method) {
+        return method.getAnnotation(Nonnull.class) != null;
+    }
+
     /**
      * Create the event class.
      *
@@ -258,14 +268,14 @@ public class ClassGenerator {
         checkNotNull(name, "name");
         checkNotNull(parentType, "parentType");
 
-        final ImmutableSet<? extends Property> properties = this.propertySearch.findProperties(type);
+        final ImmutableSet<? extends Property> properties = this.propertySearch.findProperties(new ReflectionClassWrapper(type));
         final String internalName = name.replace('.', '/');
 
         final ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
         cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER, internalName, null, Type.getInternalName(parentType), new String[]{Type.getInternalName(type)});
 
         // Create the fields
-        for (Property property : properties) {
+        for (Property<Class, Method> property : properties) {
             if (property.isLeastSpecificType()) {
                 if (getSetField(parentType, property.getName()) == null) {
                     FieldVisitor fv = cw.visitField(ACC_PRIVATE, property.getName(), Type.getDescriptor(property.getType()), null, null);
@@ -287,7 +297,7 @@ public class ClassGenerator {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitMethodInsn(INVOKESPECIAL, Type.getInternalName(parentType), "<init>", "()V", false);
 
-            for (Property property : properties) {
+            for (Property<Class, Method> property : properties) {
                 if (((hasImplementation(parentType, property.getAccessor()) && getSetField(parentType, property.getName()) == null)
                      || !property.isLeastSpecificType())) {
                     continue;
@@ -302,8 +312,8 @@ public class ClassGenerator {
                 // Only if we have a null policy:
                 // if (value == null) throw new NullPointerException(...)
                 if (this.nullPolicy != NullPolicy.DISABLE_PRECONDITIONS) {
-                    boolean useNullTest = ((this.nullPolicy == NullPolicy.NON_NULL_BY_DEFAULT && !property.hasNullable())
-                            || (this.nullPolicy == NullPolicy.NULL_BY_DEFAULT && property.hasNonnull()))
+                    boolean useNullTest = ((this.nullPolicy == NullPolicy.NON_NULL_BY_DEFAULT && !this.hasNullable(property.getAccessor()))
+                            || (this.nullPolicy == NullPolicy.NULL_BY_DEFAULT && this.hasNonnull(property.getAccessor())))
                                           && fieldRequired(parentType, property.getName());
 
                     if (useNullTest && (!property.getType().isPrimitive() || !this.primitivePropertyExceptions.contains(property.getName()))) {
@@ -395,7 +405,7 @@ public class ClassGenerator {
         toStringMv.visitVarInsn(ASTORE, 1);
 
         // Create the accessors and mutators, and fill out the toString method
-        for (Property property : properties) {
+        for (Property<Class, Method> property : properties) {
             if (!hasImplementation(parentType, property.getAccessor())) {
                 Method accessor = property.getAccessor();
 

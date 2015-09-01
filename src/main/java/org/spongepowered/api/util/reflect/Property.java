@@ -27,6 +27,8 @@ package org.spongepowered.api.util.reflect;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.base.Optional;
+import org.spongepowered.api.util.reflect.classwrapper.ClassWrapper;
+import org.spongepowered.api.util.reflect.classwrapper.MethodWrapper;
 
 import java.lang.reflect.Method;
 
@@ -35,14 +37,17 @@ import javax.annotation.Nullable;
 
 /**
  * A property is a getter with possibly a setter pair.
+ *
+ * @param <T> The class type to use
+ * @param <M> The method type to use
  */
-public final class Property {
+public final class Property<T, M> {
 
     private final String name;
-    private final Class<?> type;
-    private final Method leastSpecificMethod;
-    private final Method accessor;
-    private final Optional<Method> mutator;
+    private final ClassWrapper<T, M> type;
+    private final MethodWrapper<T, M> leastSpecificMethod;
+    private final MethodWrapper<T, M> accessor;
+    private final Optional<MethodWrapper<T, M>> mutator;
 
     /**
      * Create a new property.
@@ -53,7 +58,7 @@ public final class Property {
      * @param accessor The accessor
      * @param mutator The mutator
      */
-    public Property(String name, Class<?> type, Method leastSpecificMethod, Method accessor, @Nullable Method mutator) {
+    public Property(String name, ClassWrapper<T, M> type, MethodWrapper<T, M> leastSpecificMethod, MethodWrapper<T, M> accessor, @Nullable MethodWrapper<T, M> mutator) {
         checkNotNull(name, "name");
         checkNotNull(type, "type");
         checkNotNull(leastSpecificMethod, "leastSpecificMethod");
@@ -79,8 +84,8 @@ public final class Property {
      *
      * @return The type
      */
-    public Class<?> getType() {
-        return this.type;
+    public T getType() {
+        return this.type.getActualClass();
     }
 
     /**
@@ -88,8 +93,8 @@ public final class Property {
      *
      * @return The least specific accessor
      */
-    public Method getLeastSpecificMethod() {
-        return this.leastSpecificMethod;
+    public M getLeastSpecificMethod() {
+        return this.leastSpecificMethod.getActualMethod();
     }
 
     /**
@@ -99,8 +104,8 @@ public final class Property {
      *
      * @return The type
      */
-    public Class<?> getLeastSpecificType() {
-        return this.leastSpecificMethod.getReturnType();
+    public T getLeastSpecificType() {
+        return this.leastSpecificMethod.getReturnType().getActualClass();
     }
 
     /**
@@ -108,8 +113,8 @@ public final class Property {
      *
      * @return The accessor
      */
-    public Method getAccessor() {
-        return this.accessor;
+    public M getAccessor() {
+        return this.accessor.getActualMethod();
     }
 
     /**
@@ -117,28 +122,11 @@ public final class Property {
      *
      * @return The mutator
      */
-    public Optional<Method> getMutator() {
-        return this.mutator;
-    }
-
-    /**
-     * Tests whether the {@link Nullable} annotation has been applied
-     * to this property.
-     *
-     * @return True if the annotation has been applied
-     */
-    public boolean hasNullable() {
-        return getAccessor().getAnnotation(Nullable.class) != null;
-    }
-
-    /**
-     * Tests whether the {@link Nonnull} annotation has been applied
-     * to this property.
-     *
-     * @return True if the annotation has been applied
-     */
-    public boolean hasNonnull() {
-        return getAccessor().getAnnotation(Nonnull.class) != null;
+    public Optional<M> getMutator() {
+        if (this.mutator.isPresent()) {
+            return Optional.of(this.mutator.get().getActualMethod());
+        }
+        return Optional.absent();
     }
 
     /**
@@ -148,7 +136,7 @@ public final class Property {
      * @return True if tis property's type is the least specific
      */
     public boolean isLeastSpecificType() {
-        return this.type == this.leastSpecificMethod.getReturnType();
+        return this.type.getActualClass().equals(this.leastSpecificMethod.getReturnType().getActualClass());
     }
 
 }

@@ -38,6 +38,9 @@ dependencies {
     compile 'com.flowpowered:flow-noise:1.0.1-SNAPSHOT'
 
     compile 'org.ow2.asm:asm:5.0.3'
+
+    compile gradleApi()
+    compile 'fr.inria.gforge.spoon:spoon-core:4.2.0'
 }
 
 // JAR manifest configuration
@@ -47,10 +50,10 @@ jar {
     }
 }
 
-apply plugin: 'event-impl-gen'
+//apply plugin: 'event-impl-gen'
 
 // Compile time code generator for the event factory
-genEventImpl {
+/*genEventImpl {
     includeSrc = [
             'src/main/java/org/spongepowered/api/event/action/',
             'src/main/java/org/spongepowered/api/event/block/',
@@ -74,4 +77,4 @@ genEventImpl {
     validateCode = true
     eventImplCreateMethod = "createEventImpl"
     disambAnnot = 'org.spongepowered.api.util.event.factory.UnderlyingFields';
-}
+}*/

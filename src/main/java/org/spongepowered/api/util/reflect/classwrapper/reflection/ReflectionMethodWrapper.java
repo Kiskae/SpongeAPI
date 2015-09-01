@@ -22,26 +22,52 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.api.util.reflect;
+package org.spongepowered.api.util.reflect.classwrapper.reflection;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import org.spongepowered.api.util.reflect.classwrapper.ClassWrapper;
+import org.spongepowered.api.util.reflect.classwrapper.MethodWrapper;
 
-/**
- * Finds all the properties in a class.
- *
- * @param <T> The underlying class type
- * @param <M> The underlying method type
- */
-public interface PropertySearchStrategy<T, M> {
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.List;
 
-    /**
-     * Enumerate a list of properties on a class, considering super types
-     * and implemented interfaces.
-     *
-     * @param type The class
-     * @return A set of properties
-     */
-    ImmutableSet<? extends Property> findProperties(final ClassWrapper<T, M> type);
+public class ReflectionMethodWrapper implements MethodWrapper<Class, Method> {
 
+    private final Method method;
+
+    public ReflectionMethodWrapper(Method method) {
+        this.method = method;
+    }
+
+    @Override
+    public String getName() {
+        return this.method.getName();
+    }
+
+    @Override
+    public boolean isPublic() {
+        return Modifier.isPublic(this.method.getModifiers());
+    }
+
+    @Override
+    public ClassWrapper<Class, Method> getReturnType() {
+        return new ReflectionClassWrapper(this.method.getReturnType());
+    }
+
+    @Override
+    public List<ClassWrapper<Class, Method>> getParameterTypes() {
+        Class[] parameters = this.method.getParameterTypes();
+        List<ClassWrapper<Class, Method>> wrappers = Lists.newArrayListWithCapacity(parameters.length);
+
+        for (Class parameter: parameters) {
+            wrappers.add(new ReflectionClassWrapper(parameter));
+        }
+        return wrappers;
+    }
+
+    @Override
+    public Method getActualMethod() {
+        return this.method;
+    }
 }

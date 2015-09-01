@@ -22,26 +22,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.api.util.reflect;
+package org.spongepowered.api.util.reflect.classwrapper;
 
-import com.google.common.collect.ImmutableSet;
-import org.spongepowered.api.util.reflect.classwrapper.ClassWrapper;
+import spoon.reflect.declaration.CtClass;
+
+import java.util.List;
 
 /**
- * Finds all the properties in a class.
+ * An interface to abstract over a {@link CtClass} or a {@link Class}
  *
  * @param <T> The underlying class type
  * @param <M> The underlying method type
  */
-public interface PropertySearchStrategy<T, M> {
+public interface ClassWrapper<T, M> {
 
-    /**
-     * Enumerate a list of properties on a class, considering super types
-     * and implemented interfaces.
-     *
-     * @param type The class
-     * @return A set of properties
-     */
-    ImmutableSet<? extends Property> findProperties(final ClassWrapper<T, M> type);
+    String getName();
+
+    List<MethodWrapper<T, M>> getMethods();
+
+    boolean isAssignableFrom(ClassWrapper<T, M> other);
+
+    List<ClassWrapper<T, M>> getInterfaces();
+
+    ClassWrapper<T, M> getSuperclass();
+
+    T getActualClass();
 
 }

@@ -22,26 +22,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.api.util.reflect;
+package org.spongepowered.api.util.event.factorygen;
 
-import com.google.common.collect.ImmutableSet;
-import org.spongepowered.api.util.reflect.classwrapper.ClassWrapper;
+import org.gradle.api.Plugin;
+import org.gradle.api.Project;
+import org.gradle.api.tasks.TaskContainer;
 
-/**
- * Finds all the properties in a class.
- *
- * @param <T> The underlying class type
- * @param <M> The underlying method type
- */
-public interface PropertySearchStrategy<T, M> {
+public class EventImplGenPlugin implements Plugin<Project> {
 
-    /**
-     * Enumerate a list of properties on a class, considering super types
-     * and implemented interfaces.
-     *
-     * @param type The class
-     * @return A set of properties
-     */
-    ImmutableSet<? extends Property> findProperties(final ClassWrapper<T, M> type);
+    @Override
+    public void apply(Project project) {
+        final TaskContainer tasks = project.getTasks();
+        final EventImplGenTask task = tasks.create("genEventImpl", EventImplGenTask.class);
+        task.dependsOn(project.getConfigurations().getByName("compile"));
+
+        project.getExtensions().add("genEventImpl", EventImplGenExtension.class);
+    }
 
 }
