@@ -32,7 +32,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-public class ReflectionMethodWrapper implements MethodWrapper<Class, Method> {
+public class ReflectionMethodWrapper implements MethodWrapper<Class<?>, Method> {
 
     private final Method method;
 
@@ -51,14 +51,14 @@ public class ReflectionMethodWrapper implements MethodWrapper<Class, Method> {
     }
 
     @Override
-    public ClassWrapper<Class, Method> getReturnType() {
+    public ClassWrapper<Class<?>, Method> getReturnType() {
         return new ReflectionClassWrapper(this.method.getReturnType());
     }
 
     @Override
-    public List<ClassWrapper<Class, Method>> getParameterTypes() {
+    public List<ClassWrapper<Class<?>, Method>> getParameterTypes() {
         Class[] parameters = this.method.getParameterTypes();
-        List<ClassWrapper<Class, Method>> wrappers = Lists.newArrayListWithCapacity(parameters.length);
+        List<ClassWrapper<Class<?>, Method>> wrappers = Lists.newArrayListWithCapacity(parameters.length);
 
         for (Class parameter: parameters) {
             wrappers.add(new ReflectionClassWrapper(parameter));

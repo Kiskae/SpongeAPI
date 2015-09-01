@@ -31,7 +31,7 @@ import org.spongepowered.api.util.reflect.classwrapper.MethodWrapper;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public class ReflectionClassWrapper implements ClassWrapper<Class, Method> {
+public class ReflectionClassWrapper implements ClassWrapper<Class<?>, Method> {
 
     private Class<?> clazz;
 
@@ -45,9 +45,9 @@ public class ReflectionClassWrapper implements ClassWrapper<Class, Method> {
     }
 
     @Override
-    public List<MethodWrapper<Class, Method>> getMethods() {
+    public List<MethodWrapper<Class<?>, Method>> getMethods() {
         Method[] methods = this.clazz.getMethods();
-        List<MethodWrapper<Class, Method>> wrappers = Lists.newArrayListWithCapacity(methods.length);
+        List<MethodWrapper<Class<?>, Method>> wrappers = Lists.newArrayListWithCapacity(methods.length);
 
         for (Method method: methods) {
             wrappers.add(new ReflectionMethodWrapper(method));
@@ -56,14 +56,14 @@ public class ReflectionClassWrapper implements ClassWrapper<Class, Method> {
     }
 
     @Override
-    public boolean isAssignableFrom(ClassWrapper<Class, Method> other) {
+    public boolean isAssignableFrom(ClassWrapper<Class<?>, Method> other) {
         return this.clazz.isAssignableFrom(other.getActualClass());
     }
 
     @Override
-    public List<ClassWrapper<Class, Method>> getInterfaces() {
+    public List<ClassWrapper<Class<?>, Method>> getInterfaces() {
         Class[] interfaces = this.clazz.getInterfaces();
-        List<ClassWrapper<Class, Method>> wrappers = Lists.newArrayListWithCapacity(interfaces.length);
+        List<ClassWrapper<Class<?>, Method>> wrappers = Lists.newArrayListWithCapacity(interfaces.length);
 
         for (Class<?> klass: interfaces) {
             wrappers.add(new ReflectionClassWrapper(klass));
@@ -73,7 +73,7 @@ public class ReflectionClassWrapper implements ClassWrapper<Class, Method> {
     }
 
     @Override
-    public ClassWrapper<Class, Method> getSuperclass() {
+    public ClassWrapper<Class<?>, Method> getSuperclass() {
         if (this.clazz.getSuperclass() != null) {
             return new ReflectionClassWrapper(this.clazz.getSuperclass());
         }
