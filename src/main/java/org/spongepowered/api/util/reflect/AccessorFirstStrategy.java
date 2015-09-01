@@ -144,7 +144,7 @@ public class AccessorFirstStrategy<T, M> implements PropertySearchStrategy<T, M>
     }
 
     @Override
-    public ImmutableSet<? extends Property> findProperties(final ClassWrapper<T, M> type) {
+    public ImmutableSet<? extends Property<T, M>> findProperties(final ClassWrapper<T, M> type) {
         checkNotNull(type, "type");
 
         final Multimap<String, MethodWrapper<T, M>> accessors = HashMultimap.create();
@@ -188,7 +188,7 @@ public class AccessorFirstStrategy<T, M> implements PropertySearchStrategy<T, M>
             queue.offer(scannedType.getSuperclass());
         }
 
-        final ImmutableSet.Builder<Property> result = ImmutableSet.builder();
+        final ImmutableSet.Builder<Property<T, M>> result = ImmutableSet.builder();
 
         for (Map.Entry<String, MethodWrapper<T, M>> entry : accessors.entries()) {
             MethodWrapper<T, M> accessor = entry.getValue();

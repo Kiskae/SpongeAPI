@@ -42,6 +42,6 @@ public interface PropertySearchStrategy<T, M> {
      * @param type The class
      * @return A set of properties
      */
-    ImmutableSet<? extends Property> findProperties(final ClassWrapper<T, M> type);
+    ImmutableSet<? extends Property<T, M>> findProperties(final ClassWrapper<T, M> type);
 
 }

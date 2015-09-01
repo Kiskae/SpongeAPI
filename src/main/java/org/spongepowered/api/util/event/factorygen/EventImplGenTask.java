@@ -33,6 +33,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
+import org.spongepowered.api.util.reflect.Property;
 import spoon.Launcher;
 import spoon.SpoonAPI;
 import spoon.compiler.Environment;
@@ -58,6 +59,7 @@ import spoon.support.JavaOutputProcessor;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -101,16 +103,21 @@ public class EventImplGenTask extends DefaultTask {
         compiler.process(Collections.singletonList(EVENT_CLASS_PROCESSOR));
         // Modify factory class AST
         final CtType<?> factoryClass = factory.Type().get(extension.outputFactory);
-        final Map<CtInterface<?>, Map<String, CtTypeReference<?>>> eventFields = properties.get(Map.class, "eventFields");
-        for (CtInterface<?> event : eventFields.keySet()) {
+        //final Map<CtInterface<?>, Map<String, CtTypeReference<?>>> eventFields = properties.get(Map.class, "eventFields");
+        final Map<CtType<?>, Collection<? extends Property<CtType<?>, CtMethod<?>>>> foundProperties = properties.get(Map.class, "properties");
+
+        for (CtType<?> event: foundProperties.keySet()) {
             final CtMethod<?> method = factory.Core().createMethod();
+
+            CtTypeReference reference = event.getReference();
+
             method.setParent(factoryClass);
             method.addModifier(ModifierKind.PUBLIC);
             method.addModifier(ModifierKind.STATIC);
-            method.setType((CtTypeReference) event.getReference());
+            method.setType(reference);
             final String name = generateMethodName(event);
             method.setSimpleName(name);
-            final List<CtParameter<?>> parameters = generateMethodParameters(factory.Method(), eventFields, event);
+            final List<CtParameter<?>> parameters = generateMethodParameters(factory.Method(), foundProperties.get(event), event);
             method.setParameters(parameters);
             method.setBody((CtBlock) generateMethodBody(factory, factoryClass, extension.eventImplCreateMethod, event, parameters));
             method.setDocComment(generateDocComment(event, parameters));
@@ -135,15 +142,19 @@ public class EventImplGenTask extends DefaultTask {
         return name.toString();
     }
 
-    private static List<CtParameter<?>> generateMethodParameters(MethodFactory factory, Map<CtInterface<?>, Map<String, CtTypeReference<?>>>
-        eventFields, CtInterface<?> event) {
+    private static List<CtParameter<?>> generateMethodParameters(MethodFactory factory, Collection<? extends Property<CtType<?>, CtMethod<?>>> properties, CtType<?> event) {
         final Set<CtParameter<?>> parameters = Sets.newLinkedHashSet();
-        addMethodParameters(factory, parameters, eventFields, event);
+
+        for (Property<CtType<?>, CtMethod<?>> property: properties) {
+            parameters.add(factory.createParameter(null, property.getType().getReference(), property.getName()));
+        }
+
+        //addMethodParameters(factory, parameters, properties, event);
         return Lists.newArrayList(parameters);
     }
 
-    private static void addMethodParameters(MethodFactory factory, Set<CtParameter<?>> parameters,
-        Map<CtInterface<?>, Map<String, CtTypeReference<?>>> eventFields, CtInterface<?> event) {
+    /*private static void addMethodParameters(MethodFactory factory, Set<CtParameter<?>> parameters,
+            List<? extends Property<CtType<?>, CtMethod<?>>> properties, CtType<?> event) {
         final Map<String, CtTypeReference<?>> fields = eventFields.get(event);
         if (fields == null) {
             return;
@@ -155,10 +166,10 @@ public class EventImplGenTask extends DefaultTask {
         for (Map.Entry<String, CtTypeReference<?>> parameter : fields.entrySet()) {
             parameters.add(factory.createParameter(null, parameter.getValue(), parameter.getKey()));
         }
-    }
+    }*/
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static CtBlock<?> generateMethodBody(Factory factory, CtType<?> factoryClass, String eventImplCreationMethod, CtInterface<?> event,
+    private static CtBlock<?> generateMethodBody(Factory factory, CtType<?> factoryClass, String eventImplCreationMethod, CtType<?> event,
         List<CtParameter<?>> parameters) {
         final CtBlock<?> body = factory.Core().createBlock();
         // Map<String, Object> values = Maps.newHashMap();

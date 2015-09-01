@@ -24,17 +24,25 @@
  */
 package org.spongepowered.api.util.event.factorygen;
 
+import com.beust.jcommander.internal.Lists;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import org.gradle.api.logging.Logger;
+import org.spongepowered.api.util.reflect.AccessorFirstStrategy;
+import org.spongepowered.api.util.reflect.Property;
+import org.spongepowered.api.util.reflect.PropertySearchStrategy;
+import org.spongepowered.api.util.reflect.classwrapper.spoon.SpoonClassWrapper;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtInterface;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +57,9 @@ public class EventInterfaceProcessor extends AbstractProcessor<CtInterface<?>> {
         }
 
     });
+
+    private final Map<CtType<?>, Collection<? extends Property<CtType<?>, CtMethod<?>>>> foundProperties = Maps.newHashMap();
+
     private EventImplGenExtension extension;
     private Logger logger;
 
@@ -58,6 +69,7 @@ public class EventInterfaceProcessor extends AbstractProcessor<CtInterface<?>> {
             final ObjectProcessorProperties properties =
                 (ObjectProcessorProperties) getEnvironment().getProcessorProperties(getClass().getCanonicalName());
             properties.put("eventFields", eventFields);
+            properties.put("properties", foundProperties);
             extension = properties.get(EventImplGenExtension.class, "extension");
             logger = properties.get(Logger.class, "logger");
         } catch (Exception exception) {
@@ -73,7 +85,17 @@ public class EventInterfaceProcessor extends AbstractProcessor<CtInterface<?>> {
 
     @Override
     public void process(CtInterface<?> event) {
-        final Map<String, CtTypeReference<?>> fields = Maps.newLinkedHashMap();
+
+        PropertySearchStrategy<CtType<?>, CtMethod<?>> searchStrategy = new AccessorFirstStrategy<CtType<?>, CtMethod<?>>();
+
+        Collection<? extends Property<CtType<?>, CtMethod<?>>> eventProps = searchStrategy.findProperties(new SpoonClassWrapper(event));
+
+        foundProperties.put(event, eventProps);
+        return;
+
+
+
+        /*final Map<String, CtTypeReference<?>> fields = Maps.newLinkedHashMap();
         if (searchForExplicitFields(fields, event)) {
             return;
         }
@@ -105,7 +127,7 @@ public class EventInterfaceProcessor extends AbstractProcessor<CtInterface<?>> {
                 }
             }
         }
-        eventFields.put(event, fields);
+        eventFields.put(event, fields);*/
     }
 
     private boolean searchForExplicitFields(Map<String, CtTypeReference<?>> fields, CtElement element) {
